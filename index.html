@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sadacnet Internet — Zimbabwe ISP & Digital Solutions</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Fixed Canvas for Scroll Video Animation */
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      pointer-events: none;
+      z-index: 0;
+      background-color: #ffffff;
+    }
+
+    /* 3D Perspective Stage for Smooth Cinematic Spatial Depth */
+    .perspective-stage {
+      perspective: 1200px;
+      perspective-origin: center center;
+    }
+
+    /* Depth layers are driven directly by RAF lerp loop with zero CSS transition fighting */
+    .depth-layer {
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform, opacity;
+    }
+
+    /* Dramatic, crisp text-shadows */
+    .heading-shadow {
+      text-shadow: 0 10px 28px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    .heading-shadow-sm {
+      text-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Card & HUD shadows */
+    .box-shadow-elevated {
+      box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.10), 0 8px 18px -8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Frosted glass HUD */
+    .glass-hud {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.98);
+      box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.12), 0 0 20px rgba(229, 27, 36, 0.06);
+    }
+
+    /* Service Trigger Cards — Light & Frosted Glass Aesthetic */
+    .service-trigger {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, background-color 0.22s ease;
+    }
+    .service-trigger:hover {
+      transform: translateX(4px);
+    }
+    .service-trigger.active-service {
+      border-left: 4px solid #E51B24 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 14px 32px -6px rgba(0, 0, 0, 0.09), 0 0 16px rgba(229, 27, 36, 0.10) !important;
+      transform: translateX(4px);
+    }
+
+    /* Accessibility: Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .depth-layer {
+        transform: none !important;
+      }
+      .service-trigger:hover,
+      .service-trigger.active-service {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white text-black antialiased overflow-x-hidden selection:bg-[#E51B24] selection:text-white">
+
+  <!-- ================= FIXED BACKGROUND CANVAS ================= -->
+  <canvas id="canvas"></canvas>
+
+  <!-- ================= FIXED HEADER ================= -->
+  <header id="main-header" class="fixed top-0 left-0 w-full z-40 h-20 pointer-events-none border-b border-transparent transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between pointer-events-auto">
+      
+      <!-- LOGO (Always Visible, Click to return to Frame 1 / Top) -->
+      <a href="javascript:void(0)" onclick="scrollToSection('section-1')" class="flex items-center select-none group" title="Return to Top">
+        <img 
+          src="logo.png" 
+          id="site-logo" 
+          alt="Sadacnet Internet" 
+          class="h-9 sm:h-11 w-auto object-contain transition-opacity duration-200 opacity-100 hover:opacity-80"
+          onerror="this.onerror=null; this.src='https://i.ibb.co/3ykW6B8/sadacnet-logo.png';" 
+        />
+      </a>
+
+      <!-- DESIGNED NAV BUTTONS (Smoothly appears on last frame when screen turns white) -->
+      <nav id="header-nav" class="hidden md:flex items-center gap-7 text-[13px] font-bold tracking-tight text-neutral-600 opacity-0 pointer-events-none -translate-y-2">
+        <a href="javascript:void(0)" onclick="scrollToSection('section-2')" class="hover:text-black transition-colors flex items-center gap-1 group py-1.5">
+          <span>Sadacweb</span>
+          <span class="text-[9px] text-neutral-400 group-hover:text-[#E51B24] transition-colors">▾</span>
+        </a>
+        <a href="javascript:void(0)" class="hover:text-black transition-colors py-1.5">Media</a>
+        <a href="javascript:void(0)" class="hover:text-black transition-colors flex items-center gap-1.5 py-1.5">
+          <span>AI</span>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-[#E51B24]/10 text-[#E51B24] font-bold">NEW</span>
+        </a>
+        <a href="javascript:void(0)" onclick="scrollToSection('section-3')" class="hover:text-black transition-colors py-1.5">About</a>
+      </nav>
+
+      <!-- CONTACT US BUTTON (Smoothly appears on last frame when screen turns white) -->
+      <div id="header-cta" class="opacity-0 pointer-events-none -translate-y-2">
+        <a href="javascript:void(0)" onclick="scrollToSection('section-3')" class="text-[12px] font-bold px-5 py-2.5 rounded-full bg-black text-white hover:bg-[#E51B24] transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-[#E51B24]/25 flex items-center gap-1.5 group">
+          <span>Contact Us</span>
+          <span class="text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200">↗</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ================= FIXED STAGE OVERLAY (FOR SECTIONS) ================= -->
+  <div id="ui-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10 perspective-stage overflow-hidden">
+
+    <!-- ================================================================= -->
+    <!-- SECTION 01 — 5 QUESTIONS (FRAME 1 / TOP)                          -->
+    <!-- ================================================================= -->
+    <section id="section-1" class="absolute inset-0 w-full h-full flex flex-col justify-between pt-20 pb-8 px-6 sm:px-12 bg-transparent box-border pointer-events-auto">
+      
+      <div class="w-full max-w-7xl mx-auto h-full grid grid-cols-1 md:grid-cols-12 items-center gap-4 sm:gap-8">
+
+        <!-- LEFT COLUMN (3 Questions): Inquiry, CRM/ERP, and Domains -->
+        <div id="sec1-left" class="depth-layer md:col-span-4 flex flex-col justify-between h-full py-2 select-none z-20 pointer-events-auto">
+          
+          <!-- Query 1 (Top Left) -->
+          <div onclick="scrollToSection('section-2')" class="cursor-pointer group max-w-md" title="Click to view digital solutions">
+            <span class="text-[9.5px] font-mono font-bold text-[#E51B24] uppercase tracking-wider block mb-1">01 // INQUIRY</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-black heading-shadow group-hover:text-[#E51B24] transition-colors leading-[1.08]">
+              Need A Digital Solution<span class="text-[#E51B24]">?</span>
+            </h2>
+            <span class="inline-block mt-1 text-[10.5px] font-mono uppercase text-neutral-400 group-hover:text-black transition-colors">
+              ↳ 25+ Years Experience in Harare
+            </span>
+          </div>
+
+          <!-- Query 2 (Mid Left) -->
+          <div onclick="scrollToSection('section-2')" class="cursor-pointer group max-w-md" title="Click to view CRM & ERP systems">
+            <span class="text-[9.5px] font-mono font-bold text-[#E51B24] uppercase tracking-wider block mb-1">02 // SYSTEMS</span>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-black text-black heading-shadow-sm group-hover:text-[#E51B24] transition-colors leading-tight">
+              Ready to automate with custom CRM & ERP systems<span class="text-[#E51B24]">?</span>
+            </h2>
+            <span class="inline-block mt-1 text-[10.5px] font-mono uppercase text-neutral-400 group-hover:text-black transition-colors">
+              ↳ Enterprise Workflow Automation
+            </span>
+          </div>
+
+          <!-- Query 3 (Bottom Left) -->
+          <div onclick="scrollToSection('section-2')" class="cursor-pointer group max-w-md" title="Click to view domain registry">
+            <span class="text-[9.5px] font-mono font-bold text-[#E51B24] uppercase tracking-wider block mb-1">03 // DOMAINS</span>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-black text-neutral-800 heading-shadow-sm group-hover:text-[#E51B24] transition-colors leading-snug">
+              Registering a .co.zw or .com domain<span class="text-[#E51B24]">?</span>
+            </h2>
+            <span class="inline-block mt-1 text-[10.5px] font-mono uppercase text-neutral-400 group-hover:text-black transition-colors">
+              ↳ .co.zw • .ac.zw • .org • .net
+            </span>
+          </div>
+
+        </div>
+
+        <!-- CENTER COLUMN: CLEAN OPEN SPACE FOR LAPTOP VIDEO -->
+        <div id="center-dropzone-1" class="md:col-span-4 h-full flex items-center justify-center relative pointer-events-none">
+          <!-- Perfectly clear for the centered rotating laptop canvas -->
+        </div>
+
+        <!-- RIGHT COLUMN: Websites & Cloud Hosting (Right-Aligned) -->
+        <div id="sec1-right" class="depth-layer md:col-span-4 flex flex-col justify-between h-full py-2 text-right select-none z-20 pointer-events-auto">
+          
+          <!-- Query 4 (Top Right) -->
+          <div onclick="scrollToSection('section-2')" class="cursor-pointer group max-w-md ml-auto" title="Click to view bespoke web design">
+            <span class="text-[9.5px] font-mono font-bold text-[#E51B24] uppercase tracking-wider block mb-1">04 // WEBSITES</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-black heading-shadow group-hover:text-[#E51B24] transition-colors leading-[1.05]">
+              Need A Bespoke Website<span class="text-[#E51B24]">?</span>
+            </h2>
+            <span class="inline-block mt-1 text-[10.5px] font-mono uppercase text-neutral-400 group-hover:text-black transition-colors">
+              ↳ Web Design & Mobile Apps
+            </span>
+          </div>
+
+          <!-- Query 5 (Bottom Right) -->
+          <div onclick="scrollToSection('section-2')" class="cursor-pointer group max-w-md ml-auto" title="Click to view hosting plans">
+            <span class="text-[9.5px] font-mono font-bold text-[#E51B24] uppercase tracking-wider block mb-1">05 // HOSTING</span>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-black heading-shadow group-hover:text-[#E51B24] transition-colors leading-snug">
+              Fast, Secure Web & Email Hosting<span class="text-[#E51B24]">?</span>
+            </h2>
+            <span class="inline-block mt-1 text-[10.5px] font-mono uppercase text-neutral-400 group-hover:text-black transition-colors">
+              ↳ 99.9% Uptime • Local Support
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION 02 — SIZED-UP SERVICES & GLASS HUD (MIDDLE FRAMES ~110)   -->
+    <!-- ================================================================= -->
+    <section id="section-2" class="absolute inset-0 w-full h-full flex items-center justify-center pt-20 pb-8 px-6 sm:px-12 bg-transparent box-border opacity-0 pointer-events-none">
+
+      <div class="w-full max-w-7xl mx-auto h-full flex items-center justify-between relative">
+
+        <!-- LEFT SIDE: SERVICE SELECTORS (Light & Frosted Glass Aesthetic) -->
+        <div id="sec2-services" class="depth-layer z-20 flex flex-col gap-2.5 max-w-[220px] sm:max-w-[260px] pointer-events-auto">
+          <span class="text-[10px] font-mono uppercase text-neutral-400 font-bold tracking-wider mb-0.5">Select Service:</span>
+          
+          <!-- 1. Web Design & Dev (Active by default, clean light theme with red indicator) -->
+          <button onmouseenter="updateHUD('Web Design & Dev', 'Custom website design, mobile apps, and e-commerce platforms engineered for modern customer demands and SEO rankings.', '01 // DEV', '15% VAT INCL.', this)"
+                  onclick="updateHUD('Web Design & Dev', 'Custom website design, mobile apps, and e-commerce platforms engineered for modern customer demands and SEO rankings.', '01 // DEV', '15% VAT INCL.', this)"
+                  class="service-trigger active-service text-left px-4 py-2.5 rounded-xl bg-white border border-neutral-200/90 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">01 // DEV</span>
+            <span class="text-xs sm:text-sm font-extrabold tracking-tight block text-neutral-900 group-hover:text-black">Web Design & Dev</span>
+          </button>
+
+          <!-- 2. Web Hosting -->
+          <button onmouseenter="updateHUD('Web Hosting', 'Secure cPanel hosting with free SSL, high-speed disk arrays, and 365-day technical support based in Harare.', '02 // HOSTING', 'FROM $10/MO', this)"
+                  onclick="updateHUD('Web Hosting', 'Secure cPanel hosting with free SSL, high-speed disk arrays, and 365-day technical support based in Harare.', '02 // HOSTING', 'FROM $10/MO', this)"
+                  class="service-trigger text-left px-4 py-2.5 rounded-xl bg-white/90 border border-neutral-200/80 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">02 // CLOUD</span>
+            <span class="text-xs sm:text-sm font-extrabold tracking-tight block text-neutral-900 group-hover:text-black">Web Hosting</span>
+          </button>
+
+          <!-- 3. Domain Registration -->
+          <button onmouseenter="updateHUD('Domain Registration', 'Instant registration and DNS management for .co.zw ($60/yr), .ac.zw, .com, .org, and .net extensions.', '03 // REGISTRY', '.CO.ZW / .COM', this)"
+                  onclick="updateHUD('Domain Registration', 'Instant registration and DNS management for .co.zw ($60/yr), .ac.zw, .com, .org, and .net extensions.', '03 // REGISTRY', '.CO.ZW / .COM', this)"
+                  class="service-trigger text-left px-4 py-2.5 rounded-xl bg-white/90 border border-neutral-200/80 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">03 // NAMESPACE</span>
+            <span class="text-xs sm:text-sm font-extrabold tracking-tight block text-neutral-900 group-hover:text-black">Domain Registration</span>
+          </button>
+
+          <!-- 4. Email Hosting -->
+          <button onmouseenter="updateHUD('Email Hosting', 'Dedicated corporate email accounts with worldwide Webmail access, anti-spam filters, and reliable forwarding.', '04 // EMAIL', 'UP TO 50 ACCOUNTS', this)"
+                  onclick="updateHUD('Email Hosting', 'Dedicated corporate email accounts with worldwide Webmail access, anti-spam filters, and reliable forwarding.', '04 // EMAIL', 'UP TO 50 ACCOUNTS', this)"
+                  class="service-trigger text-left px-4 py-2.5 rounded-xl bg-white/90 border border-neutral-200/80 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">04 // CORPORATE</span>
+            <span class="text-xs sm:text-sm font-bold tracking-tight block text-neutral-900 group-hover:text-black">Email Hosting</span>
+          </button>
+
+          <!-- 5. Business Systems -->
+          <button onmouseenter="updateHUD('Business Systems', 'Custom CRM and ERP enterprise architectures that centralize sales pipelines, invoicing, and customer records.', '05 // ENTERPRISE', 'CRM / ERP', this)"
+                  onclick="updateHUD('Business Systems', 'Custom CRM and ERP enterprise architectures that centralize sales pipelines, invoicing, and customer records.', '05 // ENTERPRISE', 'CRM / ERP', this)"
+                  class="service-trigger text-left px-4 py-2.5 rounded-xl bg-white/90 border border-neutral-200/80 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">05 // WORKFLOW</span>
+            <span class="text-xs font-bold tracking-tight block text-neutral-900 group-hover:text-black">Business Systems</span>
+          </button>
+
+          <!-- 6. SEO, E-Marketing & SMM -->
+          <button onmouseenter="updateHUD('SEO & Social Media', 'Strategic Google placement (SEO), content e-marketing, and Social Media Marketing (SMM) targeting conversions across Zimbabwe.', '06 // GROWTH', 'SEO / SMM', this)"
+                  onclick="updateHUD('SEO & Social Media', 'Strategic Google placement (SEO), content e-marketing, and Social Media Marketing (SMM) targeting conversions across Zimbabwe.', '06 // GROWTH', 'SEO / SMM', this)"
+                  class="service-trigger text-left px-4 py-2.5 rounded-xl bg-white/90 border border-neutral-200/80 box-shadow-elevated hover:bg-white group cursor-pointer">
+            <span class="text-[8.5px] font-mono text-[#E51B24] block font-bold leading-none mb-1">06 // OUTREACH</span>
+            <span class="text-xs sm:text-sm font-bold tracking-tight block text-neutral-900 group-hover:text-black">SEO & Marketing</span>
+          </button>
+        </div>
+
+        <!-- CENTER COLUMN: CLEAN OPEN SPACE FOR LAPTOP VIDEO -->
+        <div id="center-dropzone-2" class="w-full max-w-md h-full flex items-center justify-center pointer-events-none">
+          <!-- Perfectly clear for the front-facing Windows laptop canvas -->
+        </div>
+
+        <!-- RIGHT SIDE: SIZED-UP COMPACT GLASS HUD BOX -->
+        <div id="sec2-hud-container" class="depth-layer z-20 max-w-[260px] sm:max-w-[300px] pointer-events-auto">
+          <div id="hud-box" class="glass-hud rounded-2xl p-5 transition-transform duration-200">
+            
+            <div class="flex items-center justify-between border-b border-neutral-200/90 pb-2.5 mb-2.5">
+              <span class="text-[9px] font-mono font-bold text-[#E51B24] uppercase tracking-wider" id="hud-tag">
+                01 // DEV
+              </span>
+              <span class="text-[10px] font-mono font-extrabold text-neutral-900" id="hud-metric">
+                15% VAT INCL.
+              </span>
+            </div>
+
+            <h4 id="hud-title" class="text-base sm:text-lg font-black tracking-tight text-black heading-shadow-sm mb-2">
+              Web Design & Dev
+            </h4>
+
+            <p id="hud-summary" class="text-xs sm:text-[12px] text-neutral-600 leading-relaxed font-medium">
+              Custom website design, mobile apps, and e-commerce platforms engineered for modern customer demands and SEO rankings.
+            </p>
+
+            <div class="mt-4 pt-2.5 border-t border-neutral-200/80 flex items-center justify-between text-[9px] font-mono text-neutral-400">
+              <span>SADACNET ISP</span>
+              <span class="text-[#E51B24] font-bold">ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION 03 — FULL-SCREEN STATEMENT (LAST FRAMES ONLY WHEN WHITE)   -->
+    <!-- ================================================================= -->
+    <section id="section-3" class="absolute inset-0 w-full h-full flex flex-col justify-center items-center pt-24 sm:pt-28 pb-8 px-6 sm:px-12 max-w-7xl mx-auto bg-transparent box-border opacity-0 pointer-events-none">
+      
+      <!-- Full-Screen Command Typography (Fully clear of fixed header) -->
+      <div id="sec3-hero" class="depth-layer flex flex-col items-center text-center justify-center max-w-5xl w-full my-auto pointer-events-auto">
+        
+        <!-- Top Pill Tag -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200 mb-4 sm:mb-6 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-[#E51B24] animate-pulse"></span>
+          <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-800">03 — Zimbabwe’s 1st Choice ISP</span>
+        </div>
+
+        <!-- Headline Scaled to Safely Fill Viewport Below Header -->
+        <h2 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-black leading-[0.98] sm:leading-[0.94] heading-shadow mb-4 sm:mb-6">
+          Connecting Zimbabwe’s <br />
+          <span class="relative">
+            Vision To Reality<span class="text-[#E51B24]">.</span>
+          </span>
+        </h2>
+
+        <!-- Subheadline -->
+        <p class="text-sm sm:text-lg md:text-xl text-neutral-600 max-w-2xl font-medium leading-relaxed mb-6 sm:mb-8">
+          Since 1995, Sadacnet has empowered enterprise businesses across Southern Africa with secure high-speed hosting, bespoke web architecture, and cloud infrastructure.
+        </p>
+
+        <!-- Enlarged Action Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <a href="tel:+263242795502" class="group inline-flex items-center gap-2.5 bg-black text-white text-xs sm:text-sm md:text-base font-bold px-7 sm:px-9 py-3 sm:py-3.5 rounded-full hover:bg-[#E51B24] transition-all duration-300 shadow-xl hover:shadow-[#E51B24]/30 box-shadow-elevated">
+            <span>Request A Quote</span>
+            <span class="text-sm sm:text-base group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200">↗</span>
+          </a>
+          <a href="mailto:info@sadacnet.com" class="inline-flex items-center gap-2 bg-white text-black border border-neutral-300 text-xs sm:text-sm md:text-base font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded-full hover:border-black transition-all duration-300 shadow-sm">
+            <span>info@sadacnet.com</span>
+          </a>
+        </div>
+
+        <div class="mt-6 sm:mt-8 text-[11px] sm:text-xs font-mono tracking-widest uppercase text-neutral-400">
+          Harare • Bulawayo • Southern Africa
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- ================= SCROLL SPACER (PROVIDES NATIVE SCROLL DISTANCE) ================= -->
+  <div id="scroll-spacer" class="w-full pointer-events-none" style="height: 4800px;"></div>
+
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    const TOTAL_FRAMES = 246;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const images = new Array(TOTAL_FRAMES + 1);
+    let targetFrame = 1;
+    let currentFrame = 1;
+    let lastRenderedFrame = -1;
+    let lastRenderedBoxT = -1;
+    let needsResize = true;
+
+    // DOM Elements
+    const sec1 = document.getElementById('section-1');
+    const sec1Left = document.getElementById('sec1-left');
+    const sec1Right = document.getElementById('sec1-right');
+
+    const sec2 = document.getElementById('section-2');
+    const sec2Services = document.getElementById('sec2-services');
+    const sec2Hud = document.getElementById('sec2-hud-container');
+
+    const sec3 = document.getElementById('section-3');
+    const sec3Hero = document.getElementById('sec3-hero');
+
+    const headerNav = document.getElementById('header-nav');
+    const headerCta = document.getElementById('header-cta');
+    const mainHeader = document.getElementById('main-header');
+    const siteLogo = document.getElementById('site-logo');
+
+    function getFrameSrc(index) {
+      return `ezgif-frame-${String(index).padStart(3, '0')}.jpg`;
+    }
+
+    // Mathematical Smoothstep Hermite Interpolation (Zero acceleration at edges)
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+    function smoothstep(min, max, val) {
+      const x = clamp((val - min) / (max - min), 0, 1);
+      return x * x * (3 - 2 * x);
+    }
+
+    // Responsive Canvas Resize
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      needsResize = true;
+    }
+
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+
+    // Render Video Frame on Canvas
+    function renderImage(img, frame) {
+      if (!img || !img.complete || img.naturalWidth === 0) return false;
+
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+
+      // Keep laptop compactly centered through Section 1 & Section 2 (Middle frames)
+      // Only expand box to full screen when video itself zooms into the screen (frames 135..210)
+      let boxT = 0;
+      if (frame <= 135) {
+        boxT = 0;
+      } else if (frame >= 210) {
+        boxT = 1;
+      } else {
+        boxT = smoothstep(135, 210, frame);
+      }
+
+      // Starting compact size (centered cleanly between left & right components)
+      let startW;
+      if (cw < 640 * dpr) {
+        startW = Math.min(cw * 0.90, 420 * dpr);
+      } else if (cw < 1024 * dpr) {
+        startW = Math.min(cw * 0.50, 560 * dpr);
+      } else {
+        startW = Math.min(cw * 0.44, 720 * dpr);
+      }
+
+      let startH = startW * (9 / 16);
+      if (startH > ch * 0.65) {
+        startH = ch * 0.65;
+        startW = startH * (16 / 9);
+      }
+      const startX = (cw - startW) * 0.5;
+      const startY = (ch - startH) * 0.5;
+
+      // Ending size: full-screen bounds
+      const endW = cw;
+      const endH = ch;
+      const endX = 0;
+      const endY = 0;
+
+      // Smooth interpolation of box bounds
+      const boxX = startX + (endX - startX) * boxT;
+      const boxY = startY + (endY - startY) * boxT;
+      const boxW = startW + (endW - startW) * boxT;
+      const boxH = startH + (endH - startH) * boxT;
+      const radius = (1 - boxT) * 16 * dpr;
+
+      // Clear full canvas with pure white (#ffffff) to seamlessly match background
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cw, ch);
+
+      // Clip region for smooth expansion
+      ctx.save();
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(boxX, boxY, boxW, boxH, radius);
+      } else {
+        ctx.rect(boxX, boxY, boxW, boxH);
+      }
+      ctx.clip();
+
+      // Image scaling inside the box
+      const scaleFit = boxW / iw;
+      const scaleCover = Math.max(boxW / iw, boxH / ih);
+      const scale = scaleFit * (1 - boxT) + scaleCover * boxT;
+
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = boxX + (boxW - dw) * 0.5;
+      const dy = boxY + (boxH - dh) * 0.5;
+
+      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.restore();
+
+      return true;
+    }
+
+    function findClosestFrame(idx) {
+      if (images[idx] && images[idx].complete && images[idx].naturalWidth > 0) {
+        return images[idx];
+      }
+      for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+        const prev = idx - offset;
+        if (prev >= 1 && images[prev] && images[prev].complete && images[prev].naturalWidth > 0) {
+          return images[prev];
+        }
+        const next = idx + offset;
+        if (next <= TOTAL_FRAMES && images[next] && images[next].complete && images[next].naturalWidth > 0) {
+          return images[next];
+        }
+      }
+      return null;
+    }
+
+    function draw(frameIdx, rawFrame) {
+      const img = findClosestFrame(frameIdx);
+      if (img) {
+        return renderImage(img, rawFrame);
+      }
+      return false;
+    }
+
+    // Scroll updates targetFrame smoothly:
+    // Scroll 0.0 -> Frame 1 (First section)
+    // Scroll 0.5 -> Frame 123 (Second section in Middle Frames)
+    // Scroll 1.0 -> Frame 246 (Third section on Last Frame)
+    function updateScroll() {
+      const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      const maxScroll = (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight;
+      const progress = maxScroll > 0 ? clamp(scrollTop / maxScroll, 0, 1) : 0;
+      targetFrame = 1 + progress * (TOTAL_FRAMES - 1);
+    }
+
+    window.addEventListener('scroll', updateScroll, { passive: true });
+
+    // Smooth component crossfading tied to frame progress
+    function updateSections(frame) {
+      // -------------------------------------------------------------
+      // SECTION 1 (5 Questions): Appears smoothly on Frame 1
+      // Peak prominence: Frame 1 to ~35
+      // Silky crossfade out: Frame 35 to ~85
+      // -------------------------------------------------------------
+      let s1Opacity = 0;
+      let s1Y = 0;
+      let s1Z = 0;
+      let s1Scale = 1;
+
+      if (frame <= 35) {
+        s1Opacity = 1;
+        s1Y = 0;
+        s1Z = 0;
+        s1Scale = 1;
+      } else if (frame < 85) {
+        const t = smoothstep(35, 85, frame);
+        s1Opacity = 1 - t;
+        s1Y = -40 * t;
+        s1Z = -160 * t;
+        s1Scale = 1 - 0.08 * t;
+      } else {
+        s1Opacity = 0;
+      }
+
+      sec1.style.opacity = s1Opacity.toFixed(4);
+      sec1.style.pointerEvents = s1Opacity > 0.08 ? 'auto' : 'none';
+      const s1Transform = `translate3d(0, ${s1Y.toFixed(1)}px, ${s1Z.toFixed(1)}px) scale(${s1Scale.toFixed(4)})`;
+      if (sec1Left) sec1Left.style.transform = s1Transform;
+      if (sec1Right) sec1Right.style.transform = s1Transform;
+
+      // -------------------------------------------------------------
+      // SECTION 2 (Services & HUD): Appears smoothly in the MIDDLE FRAMES (~110)
+      // Silky entrance: Frame 50 to 90
+      // Peak prominence: Frame 90 to 140 (where Windows is glowing & centered)
+      // Silky exit: Frame 140 to 190
+      // -------------------------------------------------------------
+      let s2Opacity = 0;
+      let s2Y = 0;
+      let s2Z = 0;
+      let s2Scale = 1;
+
+      if (frame < 50) {
+        s2Opacity = 0;
+      } else if (frame < 90) {
+        const t = smoothstep(50, 90, frame);
+        s2Opacity = t;
+        s2Y = 40 * (1 - t);
+        s2Z = -160 * (1 - t);
+        s2Scale = 0.92 + 0.08 * t;
+      } else if (frame <= 140) {
+        s2Opacity = 1;
+        s2Y = 0;
+        s2Z = 0;
+        s2Scale = 1;
+      } else if (frame < 190) {
+        const t = smoothstep(140, 190, frame);
+        s2Opacity = 1 - t;
+        s2Y = -40 * t;
+        s2Z = -160 * t;
+        s2Scale = 1 - 0.08 * t;
+      } else {
+        s2Opacity = 0;
+      }
+
+      sec2.style.opacity = s2Opacity.toFixed(4);
+      sec2.style.pointerEvents = s2Opacity > 0.08 ? 'auto' : 'none';
+      const s2Transform = `translate3d(0, ${s2Y.toFixed(1)}px, ${s2Z.toFixed(1)}px) scale(${s2Scale.toFixed(4)})`;
+      if (sec2Services) sec2Services.style.transform = s2Transform;
+      if (sec2Hud) sec2Hud.style.transform = s2Transform;
+
+      // -------------------------------------------------------------
+      // SECTION 3 (Final Full-Screen Statement): 
+      // ONLY STARTS SHOWING OPACITY IN THE LAST FRAMES AS SCREEN TURNS WHITE (232..246)
+      // -------------------------------------------------------------
+      let s3Opacity = 0;
+      let s3Y = 0;
+      let s3Z = 0;
+      let s3Scale = 1;
+
+      if (frame < 232) {
+        s3Opacity = 0;
+      } else {
+        // Smoothly rises from 0 to 1 between frame 232 and 246
+        const t = smoothstep(232, 246, frame);
+        s3Opacity = t;
+        s3Y = 24 * (1 - t);
+        s3Z = -80 * (1 - t);
+        s3Scale = 0.95 + 0.05 * t;
+      }
+
+      sec3.style.opacity = s3Opacity.toFixed(4);
+      sec3.style.pointerEvents = s3Opacity > 0.1 ? 'auto' : 'none';
+      const s3Transform = `translate3d(0, ${s3Y.toFixed(1)}px, ${s3Z.toFixed(1)}px) scale(${s3Scale.toFixed(4)})`;
+      if (sec3Hero) sec3Hero.style.transform = s3Transform;
+
+      // -------------------------------------------------------------
+      // HEADER NAV & CTA: Reveal synchronously when screen turns white (Frame 232..246)
+      // -------------------------------------------------------------
+      if (frame >= 232) {
+        const ht = smoothstep(232, 246, frame);
+        if (headerNav) {
+          headerNav.style.opacity = ht.toFixed(4);
+          headerNav.style.transform = `translateY(${(-10 * (1 - ht)).toFixed(1)}px)`;
+          headerNav.style.pointerEvents = ht > 0.5 ? 'auto' : 'none';
+        }
+        if (headerCta) {
+          headerCta.style.opacity = ht.toFixed(4);
+          headerCta.style.transform = `translateY(${(-10 * (1 - ht)).toFixed(1)}px)`;
+          headerCta.style.pointerEvents = ht > 0.5 ? 'auto' : 'none';
+        }
+        if (mainHeader) {
+          mainHeader.style.backgroundColor = `rgba(255, 255, 255, ${(0.94 * ht).toFixed(3)})`;
+          mainHeader.style.backdropFilter = ht > 0.05 ? 'blur(20px)' : 'none';
+          mainHeader.style.borderColor = `rgba(229, 231, 235, ${ht.toFixed(3)})`;
+        }
+      } else {
+        if (headerNav) {
+          headerNav.style.opacity = '0';
+          headerNav.style.transform = 'translateY(-10px)';
+          headerNav.style.pointerEvents = 'none';
+        }
+        if (headerCta) {
+          headerCta.style.opacity = '0';
+          headerCta.style.transform = 'translateY(-10px)';
+          headerCta.style.pointerEvents = 'none';
+        }
+        if (mainHeader) {
+          mainHeader.style.backgroundColor = 'transparent';
+          mainHeader.style.backdropFilter = 'none';
+          mainHeader.style.borderColor = 'transparent';
+        }
+      }
+    }
+
+    // Animation Tick Loop (High performance 60fps/120fps with inertial lerp)
+    function tick() {
+      const diff = targetFrame - currentFrame;
+      if (Math.abs(diff) > 0.0005) {
+        currentFrame += diff * 0.10;
+      } else {
+        currentFrame = targetFrame;
+      }
+
+      const frameToDraw = Math.min(Math.max(Math.round(currentFrame), 1), TOTAL_FRAMES);
+
+      let currentBoxT = 0;
+      if (currentFrame <= 135) currentBoxT = 0;
+      else if (currentFrame >= 210) currentBoxT = 1;
+      else currentBoxT = smoothstep(135, 210, currentFrame);
+
+      if (
+        frameToDraw !== lastRenderedFrame ||
+        Math.abs(currentBoxT - lastRenderedBoxT) > 0.002 ||
+        needsResize ||
+        lastRenderedFrame === -1
+      ) {
+        if (draw(frameToDraw, currentFrame)) {
+          lastRenderedFrame = frameToDraw;
+          lastRenderedBoxT = currentBoxT;
+          needsResize = false;
+        }
+      }
+
+      updateSections(currentFrame);
+
+      requestAnimationFrame(tick);
+    }
+
+    // Frame preloading with priority for key frames (1, 110, 246)
+    function preloadFrames() {
+      const priorityFrames = [1, 110, 246, 35, 75, 140, 180, 232];
+      
+      // Load priority frames first
+      priorityFrames.forEach(idx => {
+        if (idx <= TOTAL_FRAMES && !images[idx]) {
+          const img = new Image();
+          img.src = getFrameSrc(idx);
+          img.onload = () => {
+            images[idx] = img;
+            if (lastRenderedFrame === -1) {
+              const frameToDraw = Math.min(Math.max(Math.round(currentFrame), 1), TOTAL_FRAMES);
+              if (draw(frameToDraw, currentFrame)) {
+                lastRenderedFrame = frameToDraw;
+              }
+            }
+          };
+          images[idx] = img;
+        }
+      });
+
+      // Load remaining frames
+      for (let i = 1; i <= TOTAL_FRAMES; i++) {
+        if (!images[i]) {
+          const img = new Image();
+          img.src = getFrameSrc(i);
+          img.onload = () => {
+            images[i] = img;
+            if (lastRenderedFrame === -1) {
+              const frameToDraw = Math.min(Math.max(Math.round(currentFrame), 1), TOTAL_FRAMES);
+              if (draw(frameToDraw, currentFrame)) {
+                lastRenderedFrame = frameToDraw;
+              }
+            }
+          };
+          images[i] = img;
+        }
+      }
+    }
+
+    // Smooth section navigation
+    function scrollToSection(id) {
+      const maxScroll = (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight;
+      let targetP = 0;
+      if (id === 'section-1') {
+        targetP = 0.0;  // Frame 1
+      } else if (id === 'section-2') {
+        targetP = 0.45; // Lands squarely in Middle Frames (~Frame 110)
+      } else if (id === 'section-3') {
+        targetP = 1.0;  // Last frame (246)
+      }
+      window.scrollTo({
+        top: Math.round(targetP * maxScroll),
+        behavior: 'smooth'
+      });
+    }
+
+    // Dynamic HUD updater with clean light theme styling (No black fill)
+    function updateHUD(title, summary, tag, metric, activeBtn) {
+      const hudBox = document.getElementById('hud-box');
+      const hudTitle = document.getElementById('hud-title');
+      const hudSummary = document.getElementById('hud-summary');
+      const hudTag = document.getElementById('hud-tag');
+      const hudMetric = document.getElementById('hud-metric');
+
+      if (hudTitle) hudTitle.innerText = title;
+      if (hudSummary) hudSummary.innerText = summary;
+      if (hudTag) hudTag.innerText = tag;
+      if (hudMetric) hudMetric.innerText = metric;
+
+      if (hudBox) {
+        hudBox.classList.add('scale-[1.02]');
+        setTimeout(() => {
+          hudBox.classList.remove('scale-[1.02]');
+        }, 150);
+      }
+
+      if (activeBtn) {
+        document.querySelectorAll('.service-trigger').forEach(btn => {
+          btn.classList.remove('active-service');
+        });
+        activeBtn.classList.add('active-service');
+      }
+    }
+
+    // Logo scroll-dim effect
+    let scrollTimeout = null;
+    window.addEventListener('scroll', () => {
+      if (siteLogo) {
+        siteLogo.classList.remove('opacity-100');
+        siteLogo.classList.add('opacity-40');
+
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          siteLogo.classList.remove('opacity-40');
+          siteLogo.classList.add('opacity-100');
+        }, 150);
+      }
+    }, { passive: true });
+
+    // Initial startup
+    updateScroll();
+    currentFrame = targetFrame;
+    preloadFrames();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
